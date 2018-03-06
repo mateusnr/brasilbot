@@ -1,0 +1,22 @@
+{
+  "name": "brbot",
+  "version": "1.0.0",
+  "description": "Discord bot pro /r/Brasil",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "tsc && node dist"
+  },
+  "keywords": [],
+  "author": "Kxze",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^11.3.2",
+    "mz": "^2.7.0",
+    "snoowrap": "^1.15.2"
+  },
+  "devDependencies": {
+    "@types/mz": "^0.0.32",
+    "@types/node": "^9.4.6",
+    "typescript": "^2.7.2"
+  }
+}

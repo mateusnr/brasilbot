@@ -7,7 +7,7 @@ const fail = async (message: Discord.Message, warning: string) => {
 }
 
 const findRole = (message: Discord.Message) => {
-    const argument = message.content.split(" ")[1];
+    const argument = message.content.split(" ").slice(1).join(" ");
 
     const role = message.guild.roles
         .find(i => i.name === argument);

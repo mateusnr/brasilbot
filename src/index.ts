@@ -1,7 +1,7 @@
 import * as Discord from "discord.js";
 import config from "./config";
 import { addRole, removeRole } from "./commands";
-import{ monitorReddit } from "./workers";
+import { monitorReddit } from "./workers";
 
 const client = new Discord.Client();
 

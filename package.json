@@ -12,11 +12,13 @@
   "dependencies": {
     "discord.js": "^11.3.2",
     "mz": "^2.7.0",
-    "snoowrap": "^1.15.2"
+    "snoowrap": "^1.15.2",
+    "winston": "github:winstonjs/winston#master"
   },
   "devDependencies": {
     "@types/mz": "^0.0.32",
     "@types/node": "^9.4.6",
+    "@types/winston": "^2.3.9",
     "typescript": "^2.7.2"
   }
 }

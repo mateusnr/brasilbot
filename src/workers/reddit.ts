@@ -1,7 +1,8 @@
 import * as Discord from "discord.js";
 import config from "../config";
 import { fs } from "mz";
-const Snoowrap = require("snoowrap");
+import * as Winston from "winston";
+const Snoowrap = require("snoowrap"); //yikes
 
 const reddit = new Snoowrap({
     userAgent: "brasil Discord bot",
@@ -11,12 +12,13 @@ const reddit = new Snoowrap({
     password: config.reddit.password,
 });
 
-export const monitorReddit = async (client: Discord.Client) => {
+export const monitorReddit = async (client: Discord.Client, logger: Winston.Logger) => {
     const cache = JSON.parse(await fs.readFile("./common/cache.json", "utf8"));
 
     const lastPost = await reddit.getSubreddit('brasil').getNew()[0];
     if (lastPost.id === cache.id) { return; } // Checks if post has already been sent
 
+    logger.debug(`Found new post. ID: ${lastPost.id}`);
     const embed = new Discord.RichEmbed;
     embed.setAuthor("Novo post no " + lastPost.subreddit_name_prefixed, "http://flags.fmcdn.net/data/flags/w580/br.png");
     embed.setThumbnail(lastPost.thumbnail !== "self" ? lastPost.thumbnail : "http://1000logos.net/wp-content/uploads/2017/05/Reddit-logo.png");
@@ -28,8 +30,13 @@ export const monitorReddit = async (client: Discord.Client) => {
 
     // Find the correct channel
     const guild = client.guilds.find(i => i.name === config.discord.guild) as Discord.Guild;
+    if (!guild) { return logger.warn(`Could not find guild with name ${config.discord.guild}`); }
+
     const channel = guild.channels.find(i => i.name === config.discord.channel) as Discord.TextChannel;
+    if (!channel) { return logger.warn(`Could not find channel with name ${config.discord.channel}`); }
+
     channel.send(embed);
 
     await fs.writeFile("./common/cache.json", JSON.stringify({ id: lastPost.id }));
+    return;
 }

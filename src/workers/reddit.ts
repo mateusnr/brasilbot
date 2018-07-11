@@ -28,15 +28,18 @@ export const monitorReddit = async (client: Discord.Client, logger: Winston.Logg
     embed.addField("Flair", lastPost.link_flair_text, true);
     embed.setColor("GREEN");
 
-    // Find the correct channel
+    // Find the correct 
     const guild = client.guilds.find(i => i.name === config.discord.guild) as Discord.Guild;
     if (!guild) { return logger.warn(`Could not find guild with name ${config.discord.guild}`); }
 
     const channel = guild.channels.find(i => i.name === config.discord.channel) as Discord.TextChannel;
     if (!channel) { return logger.warn(`Could not find channel with name ${config.discord.channel}`); }
 
-    channel.send(embed);
-
-    await fs.writeFile("./common/cache.json", JSON.stringify({ id: lastPost.id }));
+    try {
+        channel.send(embed);
+        await fs.writeFile("./common/cache.json", JSON.stringify({ id: lastPost.id }));
+    } catch (err) {
+        logger.warn(err);
+    }
     return;
 }

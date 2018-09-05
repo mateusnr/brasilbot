@@ -25,15 +25,19 @@ export const monitorReddit = async (client: Discord.Client, logger: Winston.Logg
     embed.setTitle(lastPost.title);
     embed.setURL(`https://reddit.com${lastPost.permalink}`);
     embed.addField("Autor", lastPost.author.name, true)
-    embed.addField("Flair", lastPost.link_flair_text, true);
+    embed.addField("Flair", lastPost.link_flair_text !== null ? lastPost.link_flair_text : "Sem flair", true);
     embed.setColor("GREEN");
 
     // Find the correct 
-    const guild = client.guilds.find(i => i.name === config.discord.guild) as Discord.Guild;
-    if (!guild) { return logger.warn(`Could not find guild with name ${config.discord.guild}`); }
+    const guild = client.guilds.find(guild => guild.id === config.discord.guild_id) as Discord.Guild;
+    if (!guild) { 
+        return logger.warn(`Could not find guild with id ${config.discord.guild_id}`);
+    }
 
-    const channel = guild.channels.find(i => i.name === config.discord.channel) as Discord.TextChannel;
-    if (!channel) { return logger.warn(`Could not find channel with name ${config.discord.channel}`); }
+    const channel = guild.channels.find(channel => channel.name === config.discord.channel) as Discord.TextChannel;
+    if (!channel) { 
+        return logger.warn(`Could not find channel with name ${config.discord.channel}`);
+    }
 
     try {
         channel.send(embed);

@@ -9,7 +9,7 @@ export default {
         password: "123456"
     },
     discord: {
-        guild: "rbrasil",
-        channel: "bot-spam",
+        guild_id: '409519700750630922',
+        channel: "reddit",
     }
 }

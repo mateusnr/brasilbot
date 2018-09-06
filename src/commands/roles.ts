@@ -19,8 +19,13 @@ export const addRole = async (message: Discord.Message) => {
     try {
         const { role, argument } = findRole(message);
         
-        if (!role) { return await fail(message, `A role ${argument} não existe.`); }
-        if (!config.roles.includes(role.name)) { return await fail(message, `Você não pode adicionar a role ${argument}.`); }
+        if (!role) { 
+            return await fail(message, `A role ${argument} não existe.`); 
+        }
+        
+        if (!config.roles.includes(role.name)) { 
+            return await fail(message, `Você não pode adicionar a role ${argument}.`); 
+        }
 
         await message.member.addRole(role);
         await message.delete();

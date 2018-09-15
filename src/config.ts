@@ -11,5 +11,6 @@ export default {
     discord: {
         guild_id: '409519700750630922',
         channel: "reddit",
+        management_channel: "mods"
     }
 }

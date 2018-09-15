@@ -1,7 +1,7 @@
 import * as Discord from "discord.js";
 import config from "./config";
 import { addRole, removeRole } from "./commands";
-import { monitorReddit } from "./workers";
+import { monitorReddit, loadListeners } from "./workers";
 import * as winston from "winston";
 
 const client = new Discord.Client();
@@ -33,6 +33,8 @@ client.on("message", async (message) => {
         await removeRole(message);
     }
 });
+
+loadListeners(client, logger);
 
 client.setInterval(monitorReddit, 10000, client, logger);
 

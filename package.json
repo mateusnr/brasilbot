@@ -10,7 +10,7 @@
   "author": "Kxze",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^11.3.2",
+    "discord.js": "^11.4.2",
     "mz": "^2.7.0",
     "snoowrap": "^1.15.2",
     "winston": "github:winstonjs/winston#master"

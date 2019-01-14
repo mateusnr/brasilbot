@@ -40,7 +40,7 @@ export const monitorReddit = async (client: Discord.Client, logger: Winston.Logg
     }
 
     try {
-        channel.send(embed);
+        await channel.send(embed);
         await fs.writeFile("./common/cache.json", JSON.stringify({ id: lastPost.id }));
     } catch (err) {
         logger.warn(err);

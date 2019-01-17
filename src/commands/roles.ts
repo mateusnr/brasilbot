@@ -27,7 +27,7 @@ export const addRole = async (message: Discord.Message) => {
             return await fail(message, `Você não pode adicionar a role ${argument}.`); 
         }
 
-        await message.member.addRole(role);
+        await message.member.roles.add(role);
         await message.delete();
         return await message.member.send(`A role ${argument} foi adicionada.`);
     } catch (err) {
@@ -45,7 +45,7 @@ export const removeRole = async (message: Discord.Message) => {
         if (!message.member.roles.array().includes(role)) { return await fail(message, `Você não possui a role ${argument}`); }
         if (!config.roles.includes(role.name)) { return await fail(message, `Você não pode adicionar a role ${argument}.`); }
 
-        await message.member.removeRole(role);
+        await message.member.roles.remove(role);
         await message.delete();
         return await message.member.send(`A role ${argument} foi removida.`);
     } catch (err) {

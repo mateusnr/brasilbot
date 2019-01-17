@@ -19,18 +19,30 @@ const logger = winston.createLogger({
 })
 
 client.on("ready", () => {
-    logger.info(`Logged in as ${client.user.tag}`);
+    if (client.user) {
+        logger.info(`Logged in as ${client.user.tag}`);
+    } else {
+        logger.error(`No user!`);
+    }
 });
 
 client.on("message", async (message) => {
     if (message.content.startsWith(`${config.prefix}add`)) {
         logger.debug(`Added role to user ${message.author.id}`);
-        await addRole(message);
+        try {
+            await addRole(message);
+        } catch (err) {
+            logger.error(err);
+        } 
     }
 
     if (message.content.startsWith(`${config.prefix}remove`)) {
         logger.debug(`Removed role from user ${message.author.id}`);
-        await removeRole(message);
+        try {
+            await removeRole(message);
+        } catch (err) {
+            logger.error(err);
+        }
     }
 });
 

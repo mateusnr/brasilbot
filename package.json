@@ -10,15 +10,15 @@
   "author": "Kxze",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^11.4.2",
+    "discord.js": "git+https://github.com/discordjs/discord.js.git",
     "mz": "^2.7.0",
     "snoowrap": "^1.15.2",
+    "typescript": "^3.2.2",
     "winston": "github:winstonjs/winston#master"
   },
   "devDependencies": {
     "@types/mz": "^0.0.32",
-    "@types/node": "^9.4.6",
-    "@types/winston": "^2.3.9",
-    "typescript": "^2.7.2"
+    "@types/node": "^10.12.18",
+    "@types/winston": "^2.3.9"
   }
 }

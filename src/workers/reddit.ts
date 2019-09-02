@@ -18,6 +18,7 @@ export const monitorReddit = async (client: Discord.Client, logger: Winston.Logg
         const lastPost = await reddit.getSubreddit('brasil').getNew()[0];
         if (lastPost.id === cache.id) { return; } // Checks if post has already been sent
 
+        //TODO: create a separate function for a reddit embed
         logger.debug(`Found new post. ID: ${lastPost.id}`);
         const embed = new Discord.RichEmbed;
         embed.setAuthor("Novo post no " + lastPost.subreddit_name_prefixed, "http://flags.fmcdn.net/data/flags/w580/br.png");

@@ -19,7 +19,7 @@ export const monitorReddit = async (client: Discord.Client, logger: Winston.Logg
         if (lastPost.id === cache.id) { return; } // Checks if post has already been sent
 
         logger.debug(`Found new post. ID: ${lastPost.id}`);
-        const embed = new Discord.MessageEmbed;
+        const embed = new Discord.RichEmbed;
         embed.setAuthor("Novo post no " + lastPost.subreddit_name_prefixed, "http://flags.fmcdn.net/data/flags/w580/br.png");
         embed.setThumbnail(lastPost.thumbnail !== "self" ? lastPost.thumbnail : "http://1000logos.net/wp-content/uploads/2017/05/Reddit-logo.png");
         embed.setTitle(lastPost.title);

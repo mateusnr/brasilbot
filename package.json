@@ -10,11 +10,13 @@
   "author": "Kxze",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "git+https://github.com/discordjs/discord.js.git",
+    "@types/ws": "^6.0.3",
+    "discord.js": "11.5.1",
+    "logform": "^2.1.2",
     "mz": "^2.7.0",
     "snoowrap": "^1.15.2",
     "typescript": "^3.2.2",
-    "winston": "github:winstonjs/winston#master"
+    "winston": "3.2.1"
   },
   "devDependencies": {
     "@types/mz": "^0.0.32",

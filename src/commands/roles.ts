@@ -47,9 +47,10 @@ export const removeRole = async (message: Discord.Message) => {
         if (!message.member.roles.array().includes(role)) { return await fail(message, `Você não possui a role ${argument}`); }
         if (!config.roles.includes(role.name)) { return await fail(message, `Você não pode adicionar a role ${argument}.`); }
 
+        // TODO: add timeout to constants.ts
         await message.member.removeRole(role);
         await message.delete();
-        return await message.member.send(`A role ${argument} foi removida.`);
+        return await message.channel.send(`A role ${argument} foi removida.`).then(msg => (msg as Discord.Message).delete(3000));;
     } catch (err) {
         if (err.code === 50013) { // Missing permissions
             return await message.reply("Não tenho permissões pra realizar essa ação");

@@ -1,6 +1,8 @@
 dist/
 node_modules/
 
+secret.ts
+bot.log
 package-lock.json
 yarn.lock
 common/cache.json

@@ -1,35 +1,10 @@
+import { TOKEN } from "./secret"
+import { BRAZILIAN_STATES_ROLES, GENDER_PRONOUNS_ROLES } from "./constants"
+
 export default {
     prefix: "!",
-    roles: [
-        "Acre",
-        "Alagoas",
-        "Amapá",
-        "Amazonas",
-        "Bahia",
-        "Ceará",
-        "Distrito Federal",
-        "Espírito Santo",
-        "Goiás",
-        "Maranhão",
-        "Mato Grosso",
-        "Mato Grosso do Sul",
-        "Minas Gerais",
-        "Pará",
-        "Paraíba",
-        "Paraná",
-        "Pernambuco",
-        "Piauí",
-        "Rio de Janeiro",
-        "Rio Grande do Norte",
-        "Rio Grande do Sul",
-        "Rondônia",
-        "Roraima",
-        "Santa Catarina",
-        "São Paulo",
-        "Sergipe",
-        "Tocantins"
-    ],
-    token: "",
+    roles: [...BRAZILIAN_STATES_ROLES, ...GENDER_PRONOUNS_ROLES],
+    token: TOKEN,
     reddit: {
         clientId: "-FWI0u-CL7U-tQ",
         clientSecret: "o13fNTPHsxSiTC7JyWxRkmJAGYU",

@@ -14,13 +14,13 @@
     "discord.js": "11.5.1",
     "logform": "^2.1.2",
     "mz": "^2.7.0",
-    "snoowrap": "^1.15.2",
+    "snoowrap": "^1.20.1",
     "typescript": "^3.2.2",
     "winston": "3.2.1"
   },
   "devDependencies": {
     "@types/mz": "^0.0.32",
-    "@types/node": "^10.12.18",
+    "@types/node": "^13.7.0",
     "@types/winston": "^2.3.9"
   }
 }

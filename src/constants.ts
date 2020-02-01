@@ -33,3 +33,5 @@ export const GENDER_PRONOUNS_ROLES = [
     "Ele",
     "Elu"
 ]
+
+export const EMBED_TITLE_CHAR_LIMIT = 256;

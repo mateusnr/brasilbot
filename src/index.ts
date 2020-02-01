@@ -46,6 +46,7 @@ client.on("message", async (message) => {
     }
 });
 
+// Every 10 seconds, it will check if there's a new post in the sub
 client.setInterval(monitorReddit, 10000, client, logger);
 
 client.login(config.token);

@@ -2,8 +2,8 @@ import * as Discord from "discord.js";
 import config from "../config";
 import { fs } from "mz";
 import * as Winston from "winston";
-import { EMBED_TITLE_CHAR_LIMIT } from "../constants"
-const Snoowrap = require("snoowrap"); //yikes
+import { EMBED_TITLE_CHAR_LIMIT } from "../constants";
+import Snoowrap from "snoowrap";
 
 const reddit = new Snoowrap({
     userAgent: "brasil Discord bot",
@@ -37,7 +37,7 @@ export const monitorReddit = async (client: Discord.Client, logger: Winston.Logg
             Cache more than one thread to avoid duplicates (in case a thread is quickly removed)
         */
         const cache = JSON.parse(await fs.readFile("./common/cache.json", "utf8"));
-        const lastPost = await reddit.getSubreddit('brasil').getNew()[0];
+        const lastPost = (await reddit.getSubreddit('brasil').getNew())[0];
 
         if (lastPost.id === cache.id) { return; } // Checks if post has already been sent
 

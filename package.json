@@ -4,7 +4,8 @@
   "description": "Discord bot pro /r/Brasil",
   "main": "dist/index.js",
   "scripts": {
-    "start": "tsc && node dist"
+    "start": "tsc && node dist",
+    "tsc": "tsc"
   },
   "keywords": [],
   "author": "Kxze",
@@ -15,12 +16,13 @@
     "logform": "^2.1.2",
     "mz": "^2.7.0",
     "snoowrap": "^1.20.1",
-    "typescript": "^3.2.2",
+    "typescript": "^3.7.5",
     "winston": "3.2.1"
   },
   "devDependencies": {
     "@types/mz": "^0.0.32",
     "@types/node": "^13.7.0",
-    "@types/winston": "^2.3.9"
+    "@types/winston": "^2.3.9",
+    "@types/request": "^2.48.4"
   }
 }

@@ -45,7 +45,7 @@ export const monitorReddit = async (client: Discord.Client, logger: Winston.Logg
         logger.debug(`Found new post. ID: ${lastPost.id}`);
         const embed = new Discord.RichEmbed;
         embed.setAuthor("Novo post no " + lastPost.subreddit_name_prefixed, "http://flags.fmcdn.net/data/flags/w580/br.png");
-        embed.setThumbnail(lastPost.thumbnail !== "self" ? lastPost.thumbnail : "http://1000logos.net/wp-content/uploads/2017/05/Reddit-logo.png");
+        embed.setThumbnail("http://1000logos.net/wp-content/uploads/2017/05/Reddit-logo.png");
         embed.setTitle(parseTitle(lastPost.title));
         embed.setURL(`https://reddit.com${lastPost.permalink}`);
             embed.addField("Autor", lastPost.author.name, true)

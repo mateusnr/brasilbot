@@ -26,27 +26,39 @@ client.on("ready", () => {
     }
 });
 
-client.on("message", async (message) => {
-    if (message.content.startsWith(`${config.prefix}add`)) {
-        logger.debug(`Added role to user ${message.author.id}`);
-        try {
-            await addRole(message);
-        } catch (err) {
-            logger.error(err);
-        } 
-    }
+client.on("message", async (message: Discord.Message) =>
+{
+    // Command handler
+    if (message.content[0] === '!'){
+        const args = message.content.slice(config.prefix.length).trim().split(/\s+/g);
+        const command = args.shift()?.toLowerCase() || "";
 
-    if (message.content.startsWith(`${config.prefix}remove`)) {
-        logger.debug(`Removed role from user ${message.author.id}`);
-        try {
-            await removeRole(message);
-        } catch (err) {
-            logger.error(err);
+        switch(command)
+        {
+            case "add":
+            {
+                try {
+                    await addRole(message, args);
+                    logger.debug(`Added role to user ${message.author.id}`);
+                } catch (err) {
+                    logger.error(err);
+                } 
+                break;
+            }
+            case "remove":
+            {
+                try {
+                    await removeRole(message, args);
+                    logger.debug(`Removed role from user ${message.author.id}`);
+                } catch (err) {
+                    logger.error(err);
+                }
+            }
         }
     }
 });
 
-// Every 10 seconds, it will check if there's a new post in the sub
+// Every 10 seconds, it checks if there's a new post in the sub
 client.setInterval(monitorReddit, 10000, client, logger);
 
 client.login(config.token);

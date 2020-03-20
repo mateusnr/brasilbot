@@ -11,7 +11,7 @@ const VIRUS_ICON = 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2F
 export const monitorCorona = async (client: Discord.Client, logger: Winston.Logger) => {
   try {
     const { data } = await Axios.get(CORONA_MONITOR)
-    const embed = new Discord.RichEmbed;
+    const embed = new Discord.MessageEmbed;
     embed.setAuthor("Últimas atualizações sobre o Coronavírus", VIRUS_ICON)
     embed.setTitle("Casos de Coronavírus no Brasil")
     embed.addField("Confirmados", data.location.latest.confirmed)
@@ -19,12 +19,12 @@ export const monitorCorona = async (client: Discord.Client, logger: Winston.Logg
     embed.addField("Mortes", data.location.latest.deaths)
 
       // Find the correct
-      const guild = client.guilds.find(guild => guild.id === config.discord.guild_id) as Discord.Guild;
+      const guild = client.guilds.cache.find(guild => guild.id === config.discord.guild_id) as Discord.Guild;
       if (!guild) {
           return logger.warn(`Could not find guild with id ${config.discord.guild_id}`);
       }
 
-      const channel = guild.channels.find(channel => channel.name === 'covid-19') as Discord.TextChannel;
+      const channel = guild.channels.cache.find(channel => channel.name === 'covid-19') as Discord.TextChannel;
       if (!channel) {
           return logger.warn(`Could not find channel with name ${config.discord.channel}`);
       }

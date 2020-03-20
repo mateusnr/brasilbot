@@ -43,7 +43,7 @@ export const monitorReddit = async (client: Discord.Client, logger: Winston.Logg
 
         //TODO: create a separate function for a reddit embed
         logger.debug(`Found new post. ID: ${lastPost.id}`);
-        const embed = new Discord.RichEmbed;
+        const embed = new Discord.MessageEmbed;
         embed.setAuthor("Novo post no " + lastPost.subreddit_name_prefixed, "http://flags.fmcdn.net/data/flags/w580/br.png");
         embed.setThumbnail("http://1000logos.net/wp-content/uploads/2017/05/Reddit-logo.png");
         embed.setTitle(parseTitle(lastPost.title));
@@ -53,12 +53,12 @@ export const monitorReddit = async (client: Discord.Client, logger: Winston.Logg
         embed.setColor("GREEN");
 
         // Find the correct 
-        const guild = client.guilds.find(guild => guild.id === config.discord.guild_id) as Discord.Guild;
+        const guild = client.guilds.cache.find(guild => guild.id === config.discord.guild_id) as Discord.Guild;
         if (!guild) { 
             return logger.warn(`Could not find guild with id ${config.discord.guild_id}`);
         }
 
-        const channel = guild.channels.find(channel => channel.name === config.discord.channel) as Discord.TextChannel;
+        const channel = guild.channels.cache.find(channel => channel.name === config.discord.channel) as Discord.TextChannel;
         if (!channel) { 
             return logger.warn(`Could not find channel with name ${config.discord.channel}`);
         }

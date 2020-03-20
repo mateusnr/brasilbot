@@ -3,13 +3,13 @@ import config from "../config";
 
 const fail = async (message: Discord.Message, warning: string) => {
     await message.delete();
-    await message.channel.send(warning).then(msg => (msg as Discord.Message).delete(3000));
+    await message.channel.send(warning).then(msg => (msg as Discord.Message).delete({timeout: 3000}));
 }
 
 const findRole = (message: Discord.Message, args: String[]) => {
     const role_name = args.join(" ");
 
-    const role = message.guild.roles.find(i => i.name === role_name);
+    const role = message.guild!.roles.cache.find(i => i.name === role_name);
 
     return { role, role_name };
 }
@@ -33,8 +33,8 @@ export const addRole = async (message: Discord.Message, args: String[]) => {
         }
 
         await message.delete()
-        await message.member.addRole(role);
-        return await message.channel.send(`A role ${role_name} foi adicionada.`).then(msg => (msg as Discord.Message).delete(3000));
+        await message.member!.roles.add(role);
+        return await message.channel.send(`A role ${role_name} foi adicionada.`).then(msg => (msg as Discord.Message).delete({timeout: 3000}));
     } catch (err) {
         await message.channel.send(err.code);
         if (err.code === 50013) { // Missing permissions
@@ -54,13 +54,13 @@ export const removeRole = async (message: Discord.Message, args: String[]) => {
 
             return await fail(message, `A role ${role_name} não existe.`);
         }
-        if (!message.member.roles.array().includes(role)) { return await fail(message, `Você não possui a role ${role_name}`); }
+        if (!message.member!.roles.cache.array().includes(role)) { return await fail(message, `Você não possui a role ${role_name}`); }
         if (!config.roles.includes(role.name)) { return await fail(message, `Você não pode adicionar a role ${role_name}.`); }
 
         // TODO: add timeout to constants.ts
-        await message.member.removeRole(role);
+        await message.member!.roles.remove(role);
         await message.delete();
-        return await message.channel.send(`A role ${role_name} foi removida.`).then(msg => (msg as Discord.Message).delete(3000));;
+        return await message.channel.send(`A role ${role_name} foi removida.`).then(msg => (msg as Discord.Message).delete({timeout: 3000}));;
     } catch (err) {
         if (err.code === 50013) { // Missing permissions
             return await message.reply("Não tenho permissões pra realizar essa ação");

@@ -1,36 +1,30 @@
 import * as Discord from "discord.js";
 import * as Winston from "winston";
 import config from "../config";
-import Axios from 'axios'
+import { getCorona } from '../functions/get-corona'
 
 
-const CORONA_MONITOR = 'https://coronavirus-tracker-api.herokuapp.com/v2/locations/35'
-const VIRUS_ICON = 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.ftkmj8qzG4U3MUQnptxqoAHaHa%26pid%3DApi&f=1'
-
+const CORONA_CHANNEL = 'covid-19'
 
 export const monitorCorona = async (client: Discord.Client, logger: Winston.Logger) => {
   try {
-    const { data } = await Axios.get(CORONA_MONITOR)
-    const embed = new Discord.MessageEmbed;
-    embed.setAuthor("Últimas atualizações sobre o Coronavírus", VIRUS_ICON)
-    embed.setTitle("Casos de Coronavírus no Brasil")
-    embed.addField("Confirmados", data.location.latest.confirmed)
-    embed.addField("Recuperados", data.location.latest.recovered)
-    embed.addField("Mortes", data.location.latest.deaths)
-
-      // Find the correct
-      const guild = client.guilds.cache.find(guild => guild.id === config.discord.guild_id) as Discord.Guild;
+    try {
+      const brData = await getCorona('brazil')
+      const guild = client.guilds.cache.get(config.discord.guild_id)
       if (!guild) {
-          return logger.warn(`Could not find guild with id ${config.discord.guild_id}`);
+        return logger.warn(`Could not find guild with id ${config.discord.guild_id}`);
       }
-
-      const channel = guild.channels.cache.find(channel => channel.name === 'covid-19') as Discord.TextChannel;
+  
+      const channel = guild.channels.cache.find(channel => channel.name === CORONA_CHANNEL) as Discord.TextChannel;
       if (!channel) {
-          return logger.warn(`Could not find channel with name ${config.discord.channel}`);
+        return logger.warn(`Could not find channel with name ${config.discord.channel}`);
       }
-      await channel.send(embed);
+      await channel.send(brData);
+    } catch (err) {
+      logger.warn(err)
+    }
   } catch (err) {
-      logger.warn(err);
+    logger.warn(err);
   }
   return;
 }

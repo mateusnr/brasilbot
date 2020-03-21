@@ -8,7 +8,7 @@ const CORONA_CHANNEL = 'covid-19'
 
 export const monitorCorona = async (client: Discord.Client, logger: Winston.Logger) => {
   try {
-    const brData = await getCorona('brazil')
+    const brData = await getCorona('Brasil')
     const guild = client.guilds.cache.get(config.discord.guild_id)
     if (!guild) {
       return logger.warn(`Could not find guild with id ${config.discord.guild_id}`);

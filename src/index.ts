@@ -4,8 +4,8 @@ import { addRole, removeRole, corona } from "./commands";
 import { monitorReddit, monitorCorona } from "./workers";
 import * as winston from "winston";
 
-const SECOND = 1000
-const MINUTE = SECOND * 60
+const SECOND = 1000;
+const MINUTE = SECOND * 60;
 
 const client = new Discord.Client();
 const format = winston.format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`);
@@ -58,7 +58,7 @@ client.on("message", async (message: Discord.Message) =>
                 }
                 break
             }
-            case "corona":
+            case "covid":
                 try {
                     await corona(message, args);
                     logger.debug(`Removed role from user ${message.author.id}`);
@@ -76,5 +76,5 @@ client.login(config.token);
 client.once('ready', () => {
     client.setInterval(monitorReddit, 10 * SECOND, client, logger);
     client.setInterval(monitorCorona, 15 * MINUTE, client, logger);
-    monitorCorona(client, logger)
+    monitorCorona(client, logger);
 })

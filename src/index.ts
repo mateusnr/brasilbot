@@ -1,7 +1,7 @@
 import * as Discord from "discord.js";
 import config from "./config";
-import { addRole, removeRole, corona } from "./commands";
-import { monitorReddit, monitorCorona } from "./workers";
+import { addRole, removeRole, sendCovidData } from "./commands";
+import { monitorReddit, monitorCovid } from "./workers";
 import * as winston from "winston";
 
 const SECOND = 1000;
@@ -60,7 +60,7 @@ client.on("message", async (message: Discord.Message) =>
             }
             case "covid":
                 try {
-                    await corona(message, args);
+                    await sendCovidData(message, args);
                     logger.debug(`Removed role from user ${message.author.id}`);
                 } catch (err) {
                     logger.error(err);
@@ -75,6 +75,6 @@ client.login(config.token);
 
 client.once('ready', () => {
     client.setInterval(monitorReddit, 10 * SECOND, client, logger);
-    client.setInterval(monitorCorona, 15 * MINUTE, client, logger);
-    monitorCorona(client, logger);
+    client.setInterval(monitorCovid, 15 * MINUTE, client, logger);
+    monitorCovid(client, logger);
 })

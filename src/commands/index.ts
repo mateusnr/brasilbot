@@ -1,2 +1,2 @@
 export * from "./roles";
-export * from './corona'
+export * from './covid'

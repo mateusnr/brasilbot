@@ -28,19 +28,12 @@ function removeDiacritics(str: String) {
 }
 
 function createCovidEmbed(bingData: BingResponse, areaData?: AreaInfo){
-    let totalConfirmed, totalRecovered, totalDeaths;
-
-    if (!areaData){
-        totalConfirmed = bingData.data.totalConfirmed;
-        totalRecovered = bingData.data.totalRecovered;
-        totalDeaths = bingData.data.totalDeaths;
-    }
-    else {
-        totalConfirmed = areaData?.totalConfirmed;
-        totalRecovered = areaData?.totalRecovered;
-        totalDeaths = areaData?.totalDeaths;
-    }
-
+    const {
+        totalConfirmed,
+        totalRecovered,
+        totalDeaths
+    } = areaData || bingData.data
+    
     const lastUpdated = new Date (areaData?.lastUpdated || bingData.data.lastUpdated).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo'});
 
     const embed = new Discord.MessageEmbed()

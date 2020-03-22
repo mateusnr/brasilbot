@@ -75,6 +75,6 @@ client.login(config.token);
 
 client.once('ready', () => {
     client.setInterval(monitorReddit, 10 * SECOND, client, logger);
-    client.setInterval(monitorCovid, 15 * MINUTE, client, logger);
+    client.setInterval(monitorCovid, 60 * MINUTE, client, logger);
     monitorCovid(client, logger);
 })

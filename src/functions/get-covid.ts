@@ -28,9 +28,18 @@ function removeDiacritics(str: String) {
 }
 
 function createCovidEmbed(bingData: BingResponse, areaData?: AreaInfo){
-    const totalConfirmed = areaData?.totalConfirmed || bingData.data.totalConfirmed;
-    const totalRecovered = areaData?.totalRecovered || bingData.data.totalRecovered;
-    const totalDeaths = areaData?.totalDeaths || bingData.data.totalDeaths;
+    let totalConfirmed, totalRecovered, totalDeaths;
+
+    if (!areaData){
+        totalConfirmed = bingData.data.totalConfirmed;
+        totalRecovered = bingData.data.totalRecovered;
+        totalDeaths = bingData.data.totalDeaths;
+    }
+    else {
+        totalConfirmed = areaData?.totalConfirmed;
+        totalRecovered = areaData?.totalRecovered;
+        totalDeaths = areaData?.totalDeaths;
+    }
 
     const lastUpdated = new Date (areaData?.lastUpdated || bingData.data.lastUpdated).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo'});
 

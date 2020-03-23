@@ -61,7 +61,6 @@ client.on("message", async (message: Discord.Message) =>
             case "covid":
                 try {
                     await sendCovidData(message, args);
-                    logger.debug(`Removed role from user ${message.author.id}`);
                 } catch (err) {
                     logger.error(err);
                 }

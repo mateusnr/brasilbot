@@ -28,6 +28,10 @@ function removeDiacritics(str: String) {
     return str.toLowerCase().normalize("NFKD").replace(/[^\w\s]/g, '');
 }
 
+function formatNumber(n: number){
+    return new Intl.NumberFormat('pt-BR').format(n);
+}
+
 function createCovidEmbed(bingData: BingResponse, areaData?: AreaInfo){
     const {
         totalConfirmed,
@@ -41,9 +45,9 @@ function createCovidEmbed(bingData: BingResponse, areaData?: AreaInfo){
         .setColor('RED')
         .setAuthor("Últimas atualizações sobre o Coronavírus", VIRUS_ICON)
         .setTitle(`Casos de Coronavírus: ${areaData?.displayName || "Global"}`)
-        .addField("Confirmados", totalConfirmed)
-        .addField("Recuperados", totalRecovered)
-        .addField("Mortes", totalDeaths)
+        .addField("Confirmados", formatNumber(totalConfirmed))
+        .addField("Recuperados", formatNumber(totalRecovered))
+        .addField("Mortes", formatNumber(totalDeaths))
         .setFooter(`Última atualização em ${lastUpdated} BRT.\nPara ver esta mensagem a qualquer momento, digite \`!covid countryname\`.`);
 
     return embed;

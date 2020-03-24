@@ -3,7 +3,12 @@ import * as Discord from 'discord.js';
 
 const COVID_MONITOR_URL = 'http://bing.com/covid/data/?setlang=pt-br';
 const VIRUS_ICON = 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.ftkmj8qzG4U3MUQnptxqoAHaHa%26pid%3DApi&f=1';
-const COUNTRY_ALIASES: {[key: string]: string} = {"eua": "estados unidos", "holanda": "paises baixos", "inglaterra": "reino unido"};
+const COUNTRY_ALIASES: {[key: string]: string} = {
+    "eua": "estados unidos",
+    "holanda": "paises baixos",
+    "inglaterra": "reino unido",
+    "china": "china mainland"
+    };
 
 interface AreaInfo {
     id:				string;
@@ -62,12 +67,12 @@ export async function getCovidData(countryName: string) {
     let areaData = areas.find(a => removeDiacritics(a.displayName) === filteredCountryName);
 
     if (!areaData) {
-        // user asked for worlwide info
         if (filteredCountryName in COUNTRY_ALIASES){
             areaData = areas.find(a => removeDiacritics(a.displayName) === COUNTRY_ALIASES[filteredCountryName]);
             return createCovidEmbed(bingData, areaData);
         }
 
+        // user asked for worlwide info
         if (["global", "mundo"].includes(filteredCountryName))
             return createCovidEmbed(bingData, areaData);
 

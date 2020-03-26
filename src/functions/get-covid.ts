@@ -7,27 +7,23 @@ const COUNTRY_ALIASES: {[key: string]: string} = {
     "eua": "estados unidos",
     "holanda": "paises baixos",
     "inglaterra": "reino unido",
-    "china": "china mainland"
-    };
+    "china": "china continental"
+};
 
 interface AreaInfo {
-    id:				string;
-    displayName:	string;
+    id:             string;
+    displayName:    string;
     totalConfirmed: number;
-    totalDeaths:	number;
+    totalDeaths:    number;
     totalRecovered: number;
-    lastUpdated:	string;
+    lastUpdated:    string;
+    areas:          AreaInfo[];
+    parentId:       string;
 }
 
 interface BingResponse {
-    data: {
-        areas: AreaInfo[];
-        totalConfirmed:  number;
-        totalDeaths:     number;
-        totalRecovered:  number;
-        lastUpdated:	string;
-    };
-};
+	data: AreaInfo;
+}
 
 function removeDiacritics(str: String) {
     return str.toLowerCase().normalize("NFKD").replace(/[^\w\s]/g, '');
@@ -35,6 +31,20 @@ function removeDiacritics(str: String) {
 
 function formatNumber(n: number){
     return new Intl.NumberFormat('pt-BR').format(n);
+}
+
+function searchArea(areaInfo: AreaInfo, areaName: string): AreaInfo | undefined {
+	if (removeDiacritics(areaInfo.displayName) === removeDiacritics(areaName))
+		return areaInfo;
+
+    for (const area of areaInfo.areas){
+        const found: AreaInfo | undefined = searchArea(area, areaName);
+
+        if (found)
+            return found;
+    }
+
+    return undefined;
 }
 
 function createCovidEmbed(bingData: BingResponse, areaData?: AreaInfo){
@@ -64,7 +74,7 @@ export async function getCovidData(countryName: string) {
     const { data: { areas } }: BingResponse = bingData;
 
     const filteredCountryName = removeDiacritics(countryName);
-    let areaData = areas.find(a => removeDiacritics(a.displayName) === filteredCountryName);
+    let areaData: AreaInfo | undefined = searchArea(bingData.data, filteredCountryName);
 
     if (!areaData) {
         if (filteredCountryName in COUNTRY_ALIASES){

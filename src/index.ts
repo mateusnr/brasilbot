@@ -1,11 +1,11 @@
 import * as Discord from "discord.js";
 import config from "./config";
-import { addRole, removeRole } from "./commands";
-import { monitorReddit, monitorCorona } from "./workers";
+import { addRole, removeRole, sendCovidData } from "./commands";
+import { monitorReddit, monitorCovid } from "./workers";
 import * as winston from "winston";
 
-const ONE_SECOND_MS = 1000
-const ONE_HOUR_MS = ONE_SECOND_MS * 60 * 60
+const SECOND = 1000;
+const MINUTE = SECOND * 60;
 
 const client = new Discord.Client();
 const format = winston.format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`);
@@ -56,13 +56,24 @@ client.on("message", async (message: Discord.Message) =>
                 } catch (err) {
                     logger.error(err);
                 }
+                break
             }
+            case "covid":
+                try {
+                    await sendCovidData(message, args);
+                } catch (err) {
+                    logger.error(err);
+                }
+                break
         }
     }
 });
 
-// Every 10 seconds, it checks if there's a new post in the sub
-client.setInterval(monitorReddit, 10 * ONE_SECOND_MS, client, logger);
-client.setInterval(monitorCorona, ONE_HOUR_MS, client, logger);
 
 client.login(config.token);
+
+client.once('ready', () => {
+    client.setInterval(monitorReddit, 10 * SECOND, client, logger);
+    client.setInterval(monitorCovid, 120 * MINUTE, client, logger);
+    monitorCovid(client, logger);
+})

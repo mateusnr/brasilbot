@@ -5,10 +5,15 @@
   "main": "dist/index.js",
   "scripts": {
     "start": "tsc && node dist",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "lint": "eslint --fix ./src/**/*.ts"
   },
   "keywords": [],
   "author": "Kxze",
+  "contributors": [
+    { "name" : "Mateus", "url": "https://github.com/mateusnr" },
+    { "name" : "Gabriel", "url": "https://github.com/gabrielchiconi" }
+  ],
   "license": "ISC",
   "dependencies": {
     "@types/ws": "^6.0.3",
@@ -25,6 +30,14 @@
     "@types/mz": "^0.0.32",
     "@types/node": "^13.7.0",
     "@types/request": "^2.48.4",
-    "@types/winston": "^2.3.9"
+    "@types/winston": "^2.3.9",
+    "@typescript-eslint/eslint-plugin": "^2.25.0",
+    "@typescript-eslint/parser": "^2.25.0",
+    "eslint": "^6.8.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1"
   }
 }

@@ -5,7 +5,7 @@
     "lib": ["esnext", "dom"],
     "sourceMap": true,
     "outDir": "./dist",
-    "rootDir": "./src",   
+    "rootDir": "./src",
     "removeComments": true,
     "strict": true,
     "noUnusedLocals": true,

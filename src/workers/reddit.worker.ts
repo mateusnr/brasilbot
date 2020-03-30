@@ -4,6 +4,8 @@ import config from '../config'
 import { fs } from 'mz'
 import Snoowrap from 'snoowrap'
 
+const REDDIT_CACHE_FILE = './reddit-last-post.cache'
+
 const reddit = new Snoowrap({
     userAgent: 'brasil Discord bot',
     clientId: config.reddit.clientId,
@@ -31,14 +33,11 @@ const parseTitle = (title: string): string => {
 
 export const monitorReddit = async (client: Discord.Client, logger: Winston.Logger): Promise<void> => {
     try {
-    /*
-            TODO: create a new cache.json if the file doesn't exist
-            Cache more than one thread to avoid duplicates (in case a thread is quickly removed)
-        */
-        const cache = JSON.parse(await fs.readFile('./common/cache.json', 'utf8'))
-        const lastPost = (await reddit.getSubreddit('brasil').getNew())[0]
+        const fileExists = fs.existsSync(REDDIT_CACHE_FILE)
+        const lastLoadedPostID = fileExists && fs.readFileSync(REDDIT_CACHE_FILE).toString()
+        const [lastPost] = await reddit.getSubreddit('brasil').getNew()
 
-        if (lastPost.id === cache.id) { return } // Checks if post has already been sent
+        if (lastPost.id === lastLoadedPostID) return
 
         // TODO: create a separate function for a reddit embed
         logger.debug(`Found new post. ID: ${lastPost.id}`)
@@ -64,7 +63,7 @@ export const monitorReddit = async (client: Discord.Client, logger: Winston.Logg
             return
         }
         await channel.send(embed)
-        await fs.writeFile('./common/cache.json', JSON.stringify({ id: lastPost.id }))
+        await fs.writeFile(REDDIT_CACHE_FILE, lastPost.id)
     } catch (err) {
         logger.warn(err)
     }

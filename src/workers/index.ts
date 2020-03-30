@@ -1,2 +1,2 @@
-export * from './reddit'
-export * from './covid'
+export * from './reddit.worker'
+export * from './covid.worker'

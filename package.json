@@ -8,11 +8,22 @@
     "tsc": "tsc",
     "lint": "eslint --fix ./src/**/*.ts"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "keywords": [],
   "author": "Kxze",
   "contributors": [
-    { "name" : "Mateus", "url": "https://github.com/mateusnr" },
-    { "name" : "Gabriel", "url": "https://github.com/gabrielchiconi" }
+    {
+      "name": "Mateus",
+      "url": "https://github.com/mateusnr"
+    },
+    {
+      "name": "Gabriel",
+      "url": "https://github.com/gabrielchiconi"
+    }
   ],
   "license": "ISC",
   "dependencies": {
@@ -38,6 +49,8 @@
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.1"
+    "eslint-plugin-standard": "^4.0.1",
+    "husky": "^4.2.3",
+    "lint-staged": "^10.1.0"
   }
 }

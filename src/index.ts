@@ -67,7 +67,7 @@ client.on('message', async (message: Discord.Message) => {
     }
 })
 
-client.login(config.token)
+client.login(config.discord.token)
 
 client.once('ready', () => {
     client.setInterval(monitorReddit, 10 * SECOND, client, logger)

@@ -11,41 +11,43 @@ const COUNTRY_ALIASES: {[key: string]: string} = {
 }
 
 interface AreaInfo {
-    id: string;
-    displayName: string;
-    totalConfirmed: number;
-    totalDeaths: number;
-    totalRecovered: number;
-    lastUpdated: string;
-    areas: AreaInfo[];
-    parentId: string;
+    id: string
+    displayName: string
+    totalConfirmed: number
+    totalDeaths: number
+    totalRecovered: number
+    lastUpdated: string
+    areas: AreaInfo[]
+    parentId: string
 }
 
 interface BingResponse {
-	data: AreaInfo;
+    data: AreaInfo
 }
 
-function removeDiacritics (str: string) {
+function removeDiacritics (str: string): string {
     return str.toLowerCase().normalize('NFKD').replace(/[^\w\s]/g, '')
 }
 
-function formatNumber (n: number) {
+function formatNumber (n: number): string {
     return new Intl.NumberFormat('pt-BR').format(n)
 }
 
 function searchArea (areaInfo: AreaInfo, areaName: string): AreaInfo | undefined {
-    if (removeDiacritics(areaInfo.displayName) === removeDiacritics(areaName)) { return areaInfo }
+    if (removeDiacritics(areaInfo.displayName) === removeDiacritics(areaName)) {
+        return areaInfo
+    }
 
     for (const area of areaInfo.areas) {
-        const found: AreaInfo | undefined = searchArea(area, areaName)
+        const found = searchArea(area, areaName)
 
-        if (found) { return found }
+        if (found) return found
     }
 
     return undefined
 }
 
-function createCovidEmbed (bingData: BingResponse, areaData?: AreaInfo) {
+function createCovidEmbed (bingData: BingResponse, areaData?: AreaInfo): Discord.MessageEmbed {
     const {
         totalConfirmed,
         totalRecovered,
@@ -66,12 +68,12 @@ function createCovidEmbed (bingData: BingResponse, areaData?: AreaInfo) {
     return embed
 }
 
-export async function getCovidData (countryName: string) {
+export async function getCovidData (countryName: string): Promise<Discord.MessageEmbed> {
     const bingData: BingResponse = await Axios.get(COVID_MONITOR_URL)
     const { data: { areas } }: BingResponse = bingData
 
     const filteredCountryName = removeDiacritics(countryName)
-    let areaData: AreaInfo | undefined = searchArea(bingData.data, filteredCountryName)
+    let areaData = searchArea(bingData.data, filteredCountryName)
 
     if (!areaData) {
         if (filteredCountryName in COUNTRY_ALIASES) {

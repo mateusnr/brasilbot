@@ -18,4 +18,7 @@ parserOptions:
 rules:
   '@typescript-eslint/no-misused-promises': off
   '@typescript-eslint/explicit-function-return-type': error
+  '@typescript-eslint/camelcase': [error, {properties: never}]
+  '@typescript-eslint/no-non-null-assertion': off
+  '@typescript-eslint/member-delimiter-style': [error, {multiline: {delimiter: none}}]
   indent: [error, 4]

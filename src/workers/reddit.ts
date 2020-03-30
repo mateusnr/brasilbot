@@ -1,7 +1,7 @@
 import * as Discord from 'discord.js'
+import * as Winston from 'winston'
 import config from '../config'
 import { fs } from 'mz'
-import { EMBED_TITLE_CHAR_LIMIT } from '../constants'
 import Snoowrap from 'snoowrap'
 
 const reddit = new Snoowrap({
@@ -20,16 +20,16 @@ const reddit = new Snoowrap({
  * @param title Reddit thread title
  * @returns String containing the title
  */
-const parseTitle = function (title: string) {
-    if (title.length > EMBED_TITLE_CHAR_LIMIT) {
-        const newTitle = title.substr(0, EMBED_TITLE_CHAR_LIMIT - 3) + '...'
+const parseTitle = (title: string): string => {
+    if (title.length > config.reddit.titleCharLimit) {
+        const newTitle = title.substr(0, config.reddit.titleCharLimit - 3) + '...'
         return newTitle
     }
 
     return title
 }
 
-export const monitorReddit = async (client: Discord.Client, logger: Winston.Logger) => {
+export const monitorReddit = async (client: Discord.Client, logger: Winston.Logger): Promise<void> => {
     try {
     /*
             TODO: create a new cache.json if the file doesn't exist
@@ -54,12 +54,14 @@ export const monitorReddit = async (client: Discord.Client, logger: Winston.Logg
         // Find the correct
         const guild = client.guilds.cache.find(guild => guild.id === config.discord.guild_id) as Discord.Guild
         if (!guild) {
-            return logger.warn(`Could not find guild with id ${config.discord.guild_id}`)
+            logger.warn(`Could not find guild with id ${config.discord.guild_id}`)
+            return
         }
 
         const channel = guild.channels.cache.find(channel => channel.name === config.discord.channel) as Discord.TextChannel
         if (!channel) {
-            return logger.warn(`Could not find channel with name ${config.discord.channel}`)
+            logger.warn(`Could not find channel with name ${config.discord.channel}`)
+            return
         }
         await channel.send(embed)
         await fs.writeFile('./common/cache.json', JSON.stringify({ id: lastPost.id }))

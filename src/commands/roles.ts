@@ -71,7 +71,7 @@ export const removeRole = async (message: Discord.Message, args: string[]): Prom
     } catch (err) {
         const msg = await message.channel.send(err.code)
         if (err.code === 50013) { // Missing permissions
-            return await message.reply('Não tenho permissões pra realizar essa ação')
+            return message.reply('Não tenho permissões pra realizar essa ação')
         } else {
             return msg
         }

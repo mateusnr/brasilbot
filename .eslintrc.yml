@@ -22,3 +22,4 @@ rules:
   '@typescript-eslint/no-non-null-assertion': off
   '@typescript-eslint/member-delimiter-style': [error, {multiline: {delimiter: none}}]
   indent: [error, 4]
+  no-return-await: error

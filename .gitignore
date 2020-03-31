@@ -6,4 +6,6 @@ secret.ts
 bot.log
 package-lock.json
 yarn.lock
-common/cache.json
+.env
+
+*.cache

@@ -1,98 +1,95 @@
-import Axios from 'axios';
-import * as Discord from 'discord.js';
+import Axios from 'axios'
+import * as Discord from 'discord.js'
 
-const COVID_MONITOR_URL = 'http://bing.com/covid/data/?setlang=pt-br';
-const VIRUS_ICON = 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.ftkmj8qzG4U3MUQnptxqoAHaHa%26pid%3DApi&f=1';
+const COVID_MONITOR_URL = 'http://bing.com/covid/data/?setlang=pt-br'
+const VIRUS_ICON = 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.ftkmj8qzG4U3MUQnptxqoAHaHa%26pid%3DApi&f=1'
 const COUNTRY_ALIASES: {[key: string]: string} = {
-    "eua": "estados unidos",
-    "holanda": "paises baixos",
-    "inglaterra": "reino unido",
-    "china": "china continental"
-};
+    eua: 'estados unidos',
+    holanda: 'paises baixos',
+    inglaterra: 'reino unido',
+    china: 'china continental'
+}
 
 interface AreaInfo {
-    id:             string;
-    displayName:    string;
-    totalConfirmed: number;
-    totalDeaths:    number;
-    totalRecovered: number;
-    lastUpdated:    string;
-    areas:          AreaInfo[];
-    parentId:       string;
+    id: string
+    displayName: string
+    totalConfirmed: number
+    totalDeaths: number
+    totalRecovered: number
+    lastUpdated: string
+    areas: AreaInfo[]
+    parentId: string
 }
 
 interface BingResponse {
-	data: AreaInfo;
+    data: AreaInfo
 }
 
-function removeDiacritics(str: String) {
-    return str.toLowerCase().normalize("NFKD").replace(/[^\w\s]/g, '');
+function removeDiacritics (str: string): string {
+    return str.toLowerCase().normalize('NFKD').replace(/[^\w\s]/g, '')
 }
 
-function formatNumber(n: number){
-    return new Intl.NumberFormat('pt-BR').format(n);
+function formatNumber (n: number): string {
+    return new Intl.NumberFormat('pt-BR').format(n)
 }
 
-function searchArea(areaInfo: AreaInfo, areaName: string): AreaInfo | undefined {
-	if (removeDiacritics(areaInfo.displayName) === removeDiacritics(areaName))
-		return areaInfo;
-
-    for (const area of areaInfo.areas){
-        const found: AreaInfo | undefined = searchArea(area, areaName);
-
-        if (found)
-            return found;
+function searchArea (areaInfo: AreaInfo, areaName: string): AreaInfo | undefined {
+    if (removeDiacritics(areaInfo.displayName) === removeDiacritics(areaName)) {
+        return areaInfo
     }
 
-    return undefined;
+    for (const area of areaInfo.areas) {
+        const found = searchArea(area, areaName)
+
+        if (found) return found
+    }
+
+    return undefined
 }
 
-function createCovidEmbed(bingData: BingResponse, areaData?: AreaInfo){
+function createCovidEmbed (bingData: BingResponse, areaData?: AreaInfo): Discord.MessageEmbed {
     const {
         totalConfirmed,
         totalRecovered,
         totalDeaths
     } = areaData || bingData.data
-    
-    const lastUpdated = new Date (areaData?.lastUpdated || bingData.data.lastUpdated).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo'});
+
+    const lastUpdated = new Date(areaData?.lastUpdated || bingData.data.lastUpdated).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })
 
     const embed = new Discord.MessageEmbed()
         .setColor('RED')
-        .setAuthor("Últimas atualizações sobre o Coronavírus", VIRUS_ICON)
-        .setTitle(`Casos de Coronavírus: ${areaData?.displayName || "Global"}`)
-        .addField("Confirmados", formatNumber(totalConfirmed))
-        .addField("Recuperados", formatNumber(totalRecovered))
-        .addField("Mortes", formatNumber(totalDeaths))
-        .setFooter(`Última atualização em ${lastUpdated} BRT.\nPara ver esta mensagem a qualquer momento, digite \`!covid countryname\`.`);
+        .setAuthor('Últimas atualizações sobre o Coronavírus', VIRUS_ICON)
+        .setTitle(`Casos de Coronavírus: ${areaData?.displayName || 'Global'}`)
+        .addField('Confirmados', formatNumber(totalConfirmed))
+        .addField('Recuperados', formatNumber(totalRecovered))
+        .addField('Mortes', formatNumber(totalDeaths))
+        .setFooter(`Última atualização em ${lastUpdated} BRT.\nPara ver esta mensagem a qualquer momento, digite \`!covid countryname\`.`)
 
-    return embed;
-
+    return embed
 }
 
-export async function getCovidData(countryName: string) {
+export async function getCovidData (countryName: string): Promise<Discord.MessageEmbed> {
     const bingData: BingResponse = await Axios.get(COVID_MONITOR_URL)
-    const { data: { areas } }: BingResponse = bingData;
+    const { data: { areas } }: BingResponse = bingData
 
-    const filteredCountryName = removeDiacritics(countryName);
-    let areaData: AreaInfo | undefined = searchArea(bingData.data, filteredCountryName);
+    const filteredCountryName = removeDiacritics(countryName)
+    let areaData = searchArea(bingData.data, filteredCountryName)
 
     if (!areaData) {
-        if (filteredCountryName in COUNTRY_ALIASES){
-            areaData = areas.find(a => removeDiacritics(a.displayName) === COUNTRY_ALIASES[filteredCountryName]);
-            return createCovidEmbed(bingData, areaData);
+        if (filteredCountryName in COUNTRY_ALIASES) {
+            areaData = areas.find(a => removeDiacritics(a.displayName) === COUNTRY_ALIASES[filteredCountryName])
+            return createCovidEmbed(bingData, areaData)
         }
 
         // user asked for worlwide info
-        if (["global", "mundo"].includes(filteredCountryName))
-            return createCovidEmbed(bingData, areaData);
+        if (['global', 'mundo'].includes(filteredCountryName)) { return createCovidEmbed(bingData, areaData) }
 
         const embed = new Discord.MessageEmbed()
-            .setTitle("Não encontrei dados para `" + countryName + "`!")
-            .setFooter(`Para ver esta mensagem a qualquer momento, digite \`!covid countryname\`.`);
+            .setTitle('Não encontrei dados para `' + countryName + '`!')
+            .setFooter('Para ver esta mensagem a qualquer momento, digite `!covid countryname`.')
 
-        return embed;
+        return embed
     }
 
-
-    return createCovidEmbed(bingData, areaData);
+    return createCovidEmbed(bingData, areaData)
 }

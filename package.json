@@ -5,15 +5,32 @@
   "main": "dist/index.js",
   "scripts": {
     "start": "tsc && node dist",
-    "tsc": "tsc"
+    "dev": "ts-node src",
+    "tsc": "tsc",
+    "lint": "eslint --fix ./src/**/*.ts"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   },
   "keywords": [],
   "author": "Kxze",
+  "contributors": [
+    {
+      "name": "Mateus",
+      "url": "https://github.com/mateusnr"
+    },
+    {
+      "name": "Gabriel",
+      "url": "https://github.com/gabrielchiconi"
+    }
+  ],
   "license": "ISC",
   "dependencies": {
-    "@types/ws": "^6.0.3",
     "axios": "^0.19.2",
     "discord.js": "^12.0.2",
+    "dotenv-safe": "^8.2.0",
     "logform": "^2.1.2",
     "mz": "^2.7.0",
     "snoowrap": "^1.20.1",
@@ -22,9 +39,22 @@
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
+    "@types/dotenv-safe": "^8.1.0",
     "@types/mz": "^0.0.32",
     "@types/node": "^13.7.0",
     "@types/request": "^2.48.4",
-    "@types/winston": "^2.3.9"
+    "@types/winston": "^2.3.9",
+    "@types/ws": "^6.0.3",
+    "@typescript-eslint/eslint-plugin": "^2.25.0",
+    "@typescript-eslint/parser": "^2.25.0",
+    "eslint": "^6.8.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "husky": "^4.2.3",
+    "lint-staged": "^10.1.0",
+    "ts-node": "^8.8.1"
   }
 }

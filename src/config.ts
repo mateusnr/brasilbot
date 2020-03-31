@@ -1,18 +1,22 @@
-import { TOKEN } from "./secret"
-import { BRAZILIAN_STATES_ROLES, GENDER_PRONOUNS_ROLES } from "./constants"
+import * as dotenv from 'dotenv-safe'
+import BRAZILIAN_STATES_ROLES from './constants/state-roles.json'
+import GENDER_PRONOUNS_ROLES from './constants/gender-roles.json'
+
+dotenv.config()
 
 export default {
-    prefix: "!",
+    prefix: '!',
     roles: [...BRAZILIAN_STATES_ROLES, ...GENDER_PRONOUNS_ROLES],
-    token: TOKEN,
     reddit: {
-        clientId: "-FWI0u-CL7U-tQ",
-        clientSecret: "o13fNTPHsxSiTC7JyWxRkmJAGYU",
-        username: "honcripatbot",
-        password: "123456"
+        clientId: process.env.REDDIT_CLIENT_ID,
+        clientSecret: process.env.REDDIT_CLIENT_SECRET,
+        username: process.env.REDDIT_USERNAME,
+        password: process.env.REDDIT_PASSWORD,
+        titleCharLimit: 256
     },
     discord: {
-        guild_id: '409519700750630922',
-        channel: "reddit",
+        guild_id: process.env.DISCORD_GUILD_ID as string,
+        channel: 'reddit',
+        token: process.env.DISCORD_TOKEN
     }
 }

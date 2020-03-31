@@ -1,69 +1,79 @@
-import * as Discord from "discord.js";
-import config from "../config";
+import * as Discord from 'discord.js'
+import config from '../config'
 
-const fail = async (message: Discord.Message, warning: string) => {
-    await message.delete();
-    await message.channel.send(warning).then(msg => (msg as Discord.Message).delete({timeout: 3000}));
+interface RoleData {
+    role?: Discord.Role
+    roleName: string
 }
 
-const findRole = (message: Discord.Message, args: String[]) => {
-    const role_name = args.join(" ");
+const fail = async (message: Discord.Message, warning: string): Promise<Discord.Message> => {
+    await message.delete()
+    return message.channel.send(warning).then(msg => (msg).delete({ timeout: 3000 }))
+}
 
-    const role = message.guild!.roles.cache.find(i => i.name === role_name);
+const findRole = (message: Discord.Message, args: string[]): RoleData => {
+    const roleName = args.join(' ')
 
-    return { role, role_name };
+    const role = message.guild!.roles.cache.find(i => i.name === roleName)
+
+    return { role, roleName }
 }
 
 // FIXME: Repeated code
 
-export const addRole = async (message: Discord.Message, args: String[]) => {
+export const addRole = async (message: Discord.Message, args: string[]): Promise<Discord.Message> => {
     try {
-        const { role, role_name } = findRole(message, args);
+        const { role, roleName } = findRole(message, args)
 
-        if (!role) { 
-            if (role_name === ""){
-                return await fail(message, "Nenhuma role foi especificada")
+        if (!role) {
+            if (roleName === '') {
+                return fail(message, 'Nenhuma role foi especificada')
             }
 
-            return await fail(message, `A role ${role_name} não existe.`); 
+            return fail(message, `A role ${roleName} não existe.`)
         }
-        
-        if (!config.roles.includes(role.name)) { 
-            return await fail(message, `Você não pode adicionar a role ${role_name}.`); 
+
+        if (!config.roles.includes(role.name)) {
+            return fail(message, `Você não pode adicionar a role ${roleName}.`)
         }
 
         await message.delete()
-        await message.member!.roles.add(role);
-        return await message.channel.send(`A role ${role_name} foi adicionada.`).then(msg => (msg as Discord.Message).delete({timeout: 3000}));
+        await message.member!.roles.add(role)
+        return message.channel.send(`A role ${roleName} foi adicionada.`).then(msg => (msg).delete({ timeout: 3000 }))
     } catch (err) {
-        await message.channel.send(err.code);
+        const msg = await message.channel.send(err.code)
         if (err.code === 50013) { // Missing permissions
-            return await message.reply("Não tenho permissões pra realizar essa ação");
+            return message.reply('Não tenho permissões pra realizar essa ação')
+        } else {
+            return msg
         }
     }
-};
+}
 
-export const removeRole = async (message: Discord.Message, args: String[]) => {
+export const removeRole = async (message: Discord.Message, args: string[]): Promise<Discord.Message> => {
     try {
-        const { role, role_name } = findRole(message, args);
+        const { role, roleName } = findRole(message, args)
 
-        if (!role) { 
-            if (role_name === ""){
-                return await fail(message, "Nenhuma role foi especificada")
+        if (!role) {
+            if (roleName === '') {
+                return await fail(message, 'Nenhuma role foi especificada')
             }
 
-            return await fail(message, `A role ${role_name} não existe.`);
+            return await fail(message, `A role ${roleName} não existe.`)
         }
-        if (!message.member!.roles.cache.array().includes(role)) { return await fail(message, `Você não possui a role ${role_name}`); }
-        if (!config.roles.includes(role.name)) { return await fail(message, `Você não pode adicionar a role ${role_name}.`); }
+        if (!message.member!.roles.cache.array().includes(role)) { return await fail(message, `Você não possui a role ${roleName}`) }
+        if (!config.roles.includes(role.name)) { return await fail(message, `Você não pode adicionar a role ${roleName}.`) }
 
         // TODO: add timeout to constants.ts
-        await message.member!.roles.remove(role);
-        await message.delete();
-        return await message.channel.send(`A role ${role_name} foi removida.`).then(msg => (msg as Discord.Message).delete({timeout: 3000}));;
+        await message.member!.roles.remove(role)
+        await message.delete()
+        return await message.channel.send(`A role ${roleName} foi removida.`).then(msg => (msg).delete({ timeout: 3000 }))
     } catch (err) {
+        const msg = await message.channel.send(err.code)
         if (err.code === 50013) { // Missing permissions
-            return await message.reply("Não tenho permissões pra realizar essa ação");
+            return message.reply('Não tenho permissões pra realizar essa ação')
+        } else {
+            return msg
         }
-    } 
-};
+    }
+}

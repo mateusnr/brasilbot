@@ -1,7 +1,7 @@
 import Axios from 'axios'
 import * as Discord from 'discord.js'
 
-const COVID_MONITOR_URL = 'http://bing.com/covid/data/?setlang=pt-br'
+const COVID_MONITOR_URL = 'https://conteudos.xpi.com.br/wp-json/xpinsights/v1/coronavirus'
 const VIRUS_ICON = 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.ftkmj8qzG4U3MUQnptxqoAHaHa%26pid%3DApi&f=1'
 const COUNTRY_ALIASES: {[key: string]: string} = {
     eua: 'estados unidos',

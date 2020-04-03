@@ -1,7 +1,7 @@
-import * as Discord from 'discord.js'
 import { getCovidData } from '../functions/get-covid'
+import { CommandHandler } from '../command-handler'
 
-export async function covidCommand (message: Discord.Message, countryName: string[]): Promise<void> {
+export const covidCommand: CommandHandler = async (message, countryName) => {
     const cName = countryName.join(' ')
     const countryData = await getCovidData(cName || 'Brasil')
     message.channel.send(countryData)

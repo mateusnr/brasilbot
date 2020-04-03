@@ -5,6 +5,7 @@ import GENDER_PRONOUNS_ROLES from './constants/gender-roles.json'
 dotenv.config()
 
 export default {
+    selfDestructMessageTimeoutMs: 3000,
     prefix: '!',
     roles: [...BRAZILIAN_STATES_ROLES, ...GENDER_PRONOUNS_ROLES],
     reddit: {

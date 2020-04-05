@@ -4,10 +4,10 @@ import { addRole, removeRole } from './commands/roles'
 import { addCommandHandler, handleCommands } from './command-handler'
 
 export function registerAllCommands (client: Discord.Client): void {
-    addCommandHandler('covid', covidCommand)
+    addCommandHandler(covidCommand)
 
-    addCommandHandler('add', addRole)
-    addCommandHandler('remove', removeRole)
+    addCommandHandler(addRole)
+    addCommandHandler(removeRole)
 
     handleCommands(client)
 }

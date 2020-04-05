@@ -4,14 +4,20 @@ import { logger } from './logger'
 
 export type CommandHandler = (message: Discord.Message, argv: string[]) => Promise<void>
 
-const CommandHandlers: { [key: string]: CommandHandler } = {}
+export interface Command {
+    name: string
+    description: string
+    handler: CommandHandler
+}
 
-export function addCommandHandler (command: string, handler: CommandHandler): void {
-    if (CommandHandlers[command]) {
+const commandList = new Discord.Collection<string, Command>()
+
+export function addCommandHandler (command: Command): void {
+    if (commandList.has(command.name)) {
         throw new Error('The command ' + command + ' is already registered!')
     }
 
-    CommandHandlers[command] = handler
+    commandList.set(command.name, command)
 }
 
 export function handleCommands (client: Discord.Client): void {
@@ -23,8 +29,10 @@ export function handleCommands (client: Discord.Client): void {
         const args = message.content.slice(config.prefix.length).trim().split(/\s+/g)
         const command = args.shift()?.toLowerCase() || ''
 
+        if (!commandList.has(command)) return
+
         try {
-            await CommandHandlers[command](message, args)
+            await commandList.get(command)!.handler(message, args)
         } catch (err) {
             logger.error(err)
         }

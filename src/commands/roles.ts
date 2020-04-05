@@ -1,6 +1,6 @@
 import * as Discord from 'discord.js'
 import config from '../config'
-import { CommandHandler } from '../command-handler'
+import { CommandHandler, Command } from '../command-handler'
 
 interface MaybeRoleData {
     role?: Discord.Role
@@ -54,7 +54,7 @@ function checkRole (fn: RoleCommandHandler): CommandHandler {
     }
 }
 
-export const addRole: CommandHandler = checkRole(async (message, { role, roleName }) => {
+export const addRoleHandler: CommandHandler = checkRole(async (message, { role, roleName }) => {
     if (!config.roles.includes(role.name)) {
         await fail(message, `Você não pode adicionar a role ${roleName}.`)
         return
@@ -68,7 +68,7 @@ export const addRole: CommandHandler = checkRole(async (message, { role, roleNam
     msg.delete({ timeout: config.selfDestructMessageTimeoutMs })
 })
 
-export const removeRole: CommandHandler = checkRole(async (message, { role, roleName }) => {
+export const removeRoleHandler: CommandHandler = checkRole(async (message, { role, roleName }) => {
     if (!message.member!.roles.cache.array().includes(role)) {
         return fail(message, `Você não possui a role ${roleName}`)
     }
@@ -79,3 +79,15 @@ export const removeRole: CommandHandler = checkRole(async (message, { role, role
     const msg = await message.channel.send(`A role ${roleName} foi removida.`)
     msg.delete({ timeout: config.selfDestructMessageTimeoutMs })
 })
+
+export const addRole: Command = {
+    name: 'add',
+    description: 'Gives a self assignable role to the user who issued the command',
+    handler: addRoleHandler
+}
+
+export const removeRole: Command = {
+    name: 'remove',
+    description: 'Removes a self assignable role to the user who issued the command',
+    handler: removeRoleHandler
+}

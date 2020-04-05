@@ -1,6 +1,6 @@
 import * as Discord from 'discord.js'
 import config from '../config'
-import { CommandHandler, Command } from '../command-handler'
+import { CommandHandler } from '../command-handler'
 
 interface MaybeRoleData {
     role?: Discord.Role
@@ -79,15 +79,3 @@ export const removeRoleHandler: CommandHandler = checkRole(async (message, { rol
     const msg = await message.channel.send(`A role ${roleName} foi removida.`)
     msg.delete({ timeout: config.selfDestructMessageTimeoutMs })
 })
-
-export const addRole: Command = {
-    name: 'add',
-    description: 'Gives a self assignable role to the user who issued the command',
-    handler: addRoleHandler
-}
-
-export const removeRole: Command = {
-    name: 'remove',
-    description: 'Removes a self assignable role to the user who issued the command',
-    handler: removeRoleHandler
-}

@@ -1,13 +1,13 @@
 import * as Discord from 'discord.js'
 import * as Winston from 'winston'
 import config from '../config'
-import { getCovidData } from '../functions/get-covid'
+import { getCovidDataAndEmbed } from '../functions/get-covid'
 
 const COVID_CHANNEL_NAME = 'covid-19'
 
 export const monitorCovid = async (client: Discord.Client, logger: Winston.Logger): Promise<Discord.Message | void> => {
     try {
-        const brData = await getCovidData('Brasil')
+        const brData = await getCovidDataAndEmbed('Brasil')
         const guild = client.guilds.cache.get(config.discord.guild_id)
         if (!guild) {
             logger.warn(`Could not find guild with id ${config.discord.guild_id}`)

@@ -68,14 +68,21 @@ function createCovidEmbed (areaData: AreaInfo): Discord.MessageEmbed {
 
     const lastUpdated = new Date(areaData.lastUpdated).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })
 
+    const confirmedDeltaStr = ` **(+${formatNumber(totalConfirmedDelta)})**`
+    const recoveredDeltaStr = ` **(+${formatNumber(totalRecoveredDelta)})**`
+    const deathsDeltaStr = ` **(+${formatNumber(totalDeathsDelta)})**`
+
     const embed = new Discord.MessageEmbed()
         .setColor('RED')
         .setAuthor('Últimas atualizações sobre o COVID-19', VIRUS_ICON)
         .setURL(`https://www.bing.com/covid/local/${areaData.id}`)
         .setTitle(`Casos de Coronavírus: ${areaData?.displayName}`)
-        .addField('Confirmados', `${formatNumber(totalConfirmed)} **(+${formatNumber(totalConfirmedDelta)})**`, true)
-        .addField('Recuperados', `${formatNumber(totalRecovered)} **(+${formatNumber(totalRecoveredDelta)})**`, true)
-        .addField('Mortes', `${formatNumber(totalDeaths)} **(+${formatNumber(totalDeathsDelta)})**`, true)
+        .addField('Confirmados',
+            `${formatNumber(totalConfirmed)}` + (totalConfirmedDelta ? confirmedDeltaStr : ''), true)
+        .addField('Recuperados',
+            `${formatNumber(totalRecovered)}` + (totalRecoveredDelta ? recoveredDeltaStr : ''), true)
+        .addField('Mortes',
+            `${formatNumber(totalDeaths)}` + (totalDeathsDelta ? deathsDeltaStr : ''), true)
         .addField('\u200b', '\u200b')
         .addField('Taxa de mortalidade', `${((totalDeaths / totalConfirmed) * 100).toFixed(2)}%`, true)
         .addField('Taxa de recuperação', `${((totalRecovered / totalConfirmed) * 100).toFixed(2)}%`, true)
@@ -84,9 +91,7 @@ function createCovidEmbed (areaData: AreaInfo): Discord.MessageEmbed {
     return embed
 }
 
-// TODO: Change function names
-
-export async function getCovidData (countryName: string): Promise<Discord.MessageEmbed> {
+export async function getCovidDataAndEmbed (countryName: string): Promise<Discord.MessageEmbed> {
     // Bing's API lately hasn't been that much stable regarding availability but we managed to find a fallback
     const bingData: BingResponse = await Axios.get(COVID_MONITOR_URL)
         .catch(err => {

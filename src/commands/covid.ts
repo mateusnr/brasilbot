@@ -1,4 +1,4 @@
-import { getCovidDataAndEmbed } from '../functions/get-covid'
+import { getCovidDataAndEmbed } from '../helpers/get-covid'
 import { CommandHandler } from '../command-handler'
 
 export const covidCommandHandler: CommandHandler = async (message, countryName) => {

@@ -1,7 +1,7 @@
 import * as Discord from 'discord.js'
 import * as Winston from 'winston'
 import config from '../config'
-import { getCovidDataAndEmbed } from '../functions/get-covid'
+import { getCovidDataAndEmbed } from '../helpers/get-covid'
 
 const COVID_CHANNEL_NAME = 'covid-19'
 

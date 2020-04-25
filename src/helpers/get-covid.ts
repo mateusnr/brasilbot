@@ -2,7 +2,7 @@ import Axios from 'axios'
 import * as Discord from 'discord.js'
 import { logger } from '../logger'
 
-const COVID_MONITOR_URL = 'https://www.bing.com/covid/data?setlang=pt-br'
+const COVID_MONITOR_URL = 'https://www.bing.com/covid/?setlang=pt-br'
 const COVID_MONITOR_FALLBACK_URL = 'https://conteudos.xpi.com.br/wp-json/xpinsights/v1/coronavirus'
 const VIRUS_ICON = 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.ftkmj8qzG4U3MUQnptxqoAHaHa%26pid%3DApi&f=1'
 const COUNTRY_ALIASES: {[key: string]: string} = {
@@ -24,10 +24,6 @@ interface AreaInfo {
     lastUpdated: string
     areas: AreaInfo[]
     parentId: string
-}
-
-interface BingResponse {
-    data: AreaInfo
 }
 
 function removeDiacritics (str: string): string {
@@ -90,17 +86,29 @@ function createCovidEmbed (areaData: AreaInfo): Discord.MessageEmbed {
 
     return embed
 }
+/*
+    As Bing's data JSON is being return in the source, there's a separate function to parse it
+*/
+const fetchCovidData = async (): Promise<AreaInfo> => {
+    const responseHtml: string = (await Axios.get(COVID_MONITOR_URL)).data
+    const regex = /var data=(.*);/g
+
+    const covidJson: AreaInfo = JSON.parse(regex.exec(responseHtml)![1])
+
+    return covidJson
+}
 
 export async function getCovidDataAndEmbed (countryName: string): Promise<Discord.MessageEmbed> {
     // Bing's API lately hasn't been that much stable regarding availability but we managed to find a fallback
-    const bingData: BingResponse = await Axios.get(COVID_MONITOR_URL)
-        .catch(err => {
-            logger.warn(`Error ${err.response.status} when fetching data from Bing's API`)
-            return Axios.get(COVID_MONITOR_FALLBACK_URL)
+    const bingData: AreaInfo = await fetchCovidData().catch(err => {
+        logger.warn(`Error while fetching from Bing: ${err}`)
+        return Axios.get(COVID_MONITOR_FALLBACK_URL).then(response => {
+            return response.data
         })
+    })
 
     const filteredCountryName = removeDiacritics(countryName)
-    const areaData = searchArea(bingData.data, filteredCountryName)
+    const areaData = searchArea(bingData, filteredCountryName)
 
     if (!areaData) {
         const embed = new Discord.MessageEmbed()

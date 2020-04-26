@@ -23,7 +23,7 @@ interface AreaInfo {
     totalRecoveredDelta: number
     lastUpdated: string
     areas: AreaInfo[]
-    parentId: string
+    parentId?: string
 }
 
 function removeDiacritics (str: string): string {
@@ -58,7 +58,7 @@ function getAreaFullName (areaInfo: AreaInfo, worldData: AreaInfo): string {
     let fullName = areaInfo.displayName
     let tempArea = areaInfo
 
-    while (tempArea.parentId !== 'world') {
+    while (tempArea.parentId && tempArea.parentId !== 'world') {
         tempArea = searchArea(worldData, tempArea.parentId, (area) => {
             return area.id === tempArea.parentId
         })!

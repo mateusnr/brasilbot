@@ -34,17 +34,13 @@ function formatNumber (n: number): string {
     return new Intl.NumberFormat('pt-BR').format(n)
 }
 
-function searchArea (areaInfo: AreaInfo, areaName: string): AreaInfo | undefined {
-    if (removeDiacritics(areaInfo.displayName) === removeDiacritics(areaName)) {
+function searchArea (areaInfo: AreaInfo, input: string, comparator: (area: AreaInfo) => boolean): AreaInfo | undefined {
+    if (comparator(areaInfo)) {
         return areaInfo
-    } else if (areaName in COUNTRY_ALIASES) {
-        if (removeDiacritics(areaInfo.displayName) === COUNTRY_ALIASES[areaName]) {
-            return areaInfo
-        }
     }
 
     for (const area of areaInfo.areas) {
-        const found = searchArea(area, areaName)
+        const found = searchArea(area, input, comparator)
 
         if (found) return found
     }
@@ -52,7 +48,28 @@ function searchArea (areaInfo: AreaInfo, areaName: string): AreaInfo | undefined
     return undefined
 }
 
-function createCovidEmbed (areaData: AreaInfo): Discord.MessageEmbed {
+/*
+    An area's full name is defined as the place it's contained in
+    In technical terms, it is the display name of the area and its parent
+
+    Examples include: Lombardy, Italy; NYC, NY, United States
+*/
+function getAreaFullName (areaInfo: AreaInfo, worldData: AreaInfo): string {
+    let fullName = areaInfo.displayName
+    let tempArea = areaInfo
+
+    while (tempArea.parentId !== 'world') {
+        tempArea = searchArea(worldData, tempArea.parentId, (area) => {
+            return area.id === tempArea.parentId
+        })!
+
+        fullName += `, ${tempArea.displayName}`
+    }
+
+    return fullName
+}
+
+function createCovidEmbed (areaData: AreaInfo, worldData: AreaInfo): Discord.MessageEmbed {
     const {
         totalConfirmed,
         totalRecovered,
@@ -72,7 +89,7 @@ function createCovidEmbed (areaData: AreaInfo): Discord.MessageEmbed {
         .setColor('RED')
         .setAuthor('Últimas atualizações sobre o COVID-19', VIRUS_ICON)
         .setURL(`https://www.bing.com/covid/local/${areaData.id}`)
-        .setTitle(`Casos de Coronavírus: ${areaData?.displayName}`)
+        .setTitle(`Casos de Coronavírus: ${getAreaFullName(areaData, worldData)}`)
         .addField('Confirmados',
             `${formatNumber(totalConfirmed)}` + (totalConfirmedDelta ? confirmedDeltaStr : ''), true)
         .addField('Recuperados',
@@ -108,7 +125,9 @@ export async function getCovidDataAndEmbed (countryName: string): Promise<Discor
     })
 
     const filteredCountryName = removeDiacritics(countryName)
-    const areaData = searchArea(bingData, filteredCountryName)
+    const areaData = searchArea(bingData, filteredCountryName, (area) => {
+        return filteredCountryName === removeDiacritics(area.displayName) || removeDiacritics(area.displayName) === COUNTRY_ALIASES[filteredCountryName]
+    })
 
     if (!areaData) {
         const embed = new Discord.MessageEmbed()
@@ -118,5 +137,5 @@ export async function getCovidDataAndEmbed (countryName: string): Promise<Discor
         return embed
     }
 
-    return createCovidEmbed(areaData)
+    return createCovidEmbed(areaData, bingData)
 }

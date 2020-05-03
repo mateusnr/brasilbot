@@ -1,6 +1,7 @@
 import * as Discord from 'discord.js'
 import config from '../config'
 import { CommandHandler } from '../command-handler'
+import { fail } from '../helpers/utils'
 
 interface MaybeRoleData {
     role?: Discord.Role
@@ -10,12 +11,6 @@ interface MaybeRoleData {
 interface RoleData {
     role: Discord.Role
     roleName: string
-}
-
-const fail = async (message: Discord.Message, warning: string): Promise<void> => {
-    await message.delete()
-    const msg = await message.channel.send(warning)
-    msg.delete({ timeout: config.selfDestructMessageTimeoutMs })
 }
 
 const findRole = (message: Discord.Message, args: string[]): MaybeRoleData => {

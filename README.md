@@ -1,5 +1,5 @@
 ## Dependencies
-1. [Node.js 10+](https://nodejs.org/en/)
+1. [Node.js 12+](https://nodejs.org/en/)
 
 ## Installation
 1. `git clone https://github.com/mateusnr/brasilbot.git`

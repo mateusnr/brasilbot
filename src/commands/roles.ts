@@ -45,6 +45,15 @@ function checkRole (fn: RoleCommandHandler): CommandHandler {
                 return
             }
 
+            if (message.member !== user) {
+                // user needs to be a mod
+                if (message.member!.roles.cache.find(role => config.adminRoles.includes(role.name))) {
+                    return fn(message, role, user)
+                } else {
+                    fail(message, 'Você não tem permissões para realizar essa ação')
+                    return
+                }
+            }
             fn(message, role, user)
         } catch (err) {
             await message.channel.send(err.code)
@@ -60,7 +69,7 @@ export const addRoleHandler: CommandHandler = checkRole(async (message, role, us
         return fail(message, `Você não pode adicionar a role **${role.name}**.`)
     }
 
-    if (message.member?.roles.cache.array().includes(role)) {
+    if (user.roles.cache.array().includes(role)) {
         return fail(message, `Você já possui a role **${role.name}**`)
     }
 

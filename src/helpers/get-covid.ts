@@ -1,6 +1,7 @@
 import Axios from 'axios'
 import * as Discord from 'discord.js'
 import { logger } from '../logger'
+import { formatNumber, removeDiacritics } from '../helpers/utils'
 
 const COVID_MONITOR_URL = 'https://www.bing.com/covid/?setlang=pt-br'
 const COVID_MONITOR_FALLBACK_URL = 'https://conteudos.xpi.com.br/wp-json/xpinsights/v1/coronavirus'
@@ -24,14 +25,6 @@ interface AreaInfo {
     lastUpdated: string
     areas: AreaInfo[]
     parentId?: string
-}
-
-function removeDiacritics (str: string): string {
-    return str.toLowerCase().normalize('NFKD').replace(/[^\w\s]/g, '')
-}
-
-function formatNumber (n: number): string {
-    return new Intl.NumberFormat('pt-BR').format(n)
 }
 
 function searchArea (areaInfo: AreaInfo, input: string, comparator: (area: AreaInfo) => boolean): AreaInfo | undefined {

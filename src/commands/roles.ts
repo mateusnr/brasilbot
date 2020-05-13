@@ -1,38 +1,39 @@
 import * as Discord from 'discord.js'
 import config from '../config'
 import { CommandHandler } from '../command-handler'
+import { fail, removeDiacritics } from '../helpers/utils'
 
-interface MaybeRoleData {
+interface RoleCommandData {
     role?: Discord.Role
     roleName: string
+    user: Discord.GuildMember
 }
 
-interface RoleData {
-    role: Discord.Role
-    roleName: string
-}
+const findRole = (message: Discord.Message, args: string[]): RoleCommandData => {
+    const userIdStr = args[0]
+    const mentionOrUserIDPattern = /<?@?!?(\d{17,19})>?/ // only one user can be mentioend, for now
+    const isAnyUserMentioned = mentionOrUserIDPattern.test(userIdStr)
 
-const fail = async (message: Discord.Message, warning: string): Promise<void> => {
-    await message.delete()
-    const msg = await message.channel.send(warning)
-    msg.delete({ timeout: config.selfDestructMessageTimeoutMs })
-}
+    // Checks if a user was mentioned to retrieve the role name
+    const roleName = (!isAnyUserMentioned ? args.join(' ') : args.slice(1).join(' '))
+    const role = message.guild!.roles.cache.find(i => removeDiacritics(i.name) === removeDiacritics(roleName))
+    let user: Discord.GuildMember = message.member!
 
-const findRole = (message: Discord.Message, args: string[]): MaybeRoleData => {
-    const roleName = args.join(' ')
+    if (isAnyUserMentioned) {
+        const userId: string = mentionOrUserIDPattern.exec(userIdStr)![1]
+        user = message.guild!.members.cache.get(userId)!
+    }
 
-    const role = message.guild!.roles.cache.find(i => i.name === roleName)
-
-    return { role, roleName }
+    return { role, roleName, user }
 }
 
 type RoleCommandHandler =
-    (message: Discord.Message, roleData: RoleData) => Promise<void>
+    (message: Discord.Message, role: Discord.Role, user: Discord.GuildMember) => Promise<void>
 
 function checkRole (fn: RoleCommandHandler): CommandHandler {
     return async (message, args): Promise<void> => {
         try {
-            const { role, roleName } = findRole(message, args)
+            const { role, roleName, user } = findRole(message, args)
 
             if (!role) {
                 if (roleName === '') {
@@ -44,38 +45,50 @@ function checkRole (fn: RoleCommandHandler): CommandHandler {
                 return
             }
 
-            fn(message, { role, roleName })
+            if (message.member !== user) {
+                // user needs to be a mod
+                if (message.member!.roles.cache.find(role => config.adminRoles.includes(role.name))) {
+                    return fn(message, role, user)
+                } else {
+                    fail(message, 'Você não tem permissões para realizar essa ação')
+                    return
+                }
+            }
+            fn(message, role, user)
         } catch (err) {
             await message.channel.send(err.code)
             if (err.code === 50013) { // Missing permissions
-                message.reply('Não tenho permissões pra realizar essa ação')
+                fail(message, 'Não tenho permissões pra realizar essa ação')
             }
         }
     }
 }
 
-export const addRoleHandler: CommandHandler = checkRole(async (message, { role, roleName }) => {
+export const addRoleHandler: CommandHandler = checkRole(async (message, role, user) => {
     if (!config.roles.includes(role.name)) {
-        await fail(message, `Você não pode adicionar a role ${roleName}.`)
-        return
+        return fail(message, `Você não pode adicionar a role **${role.name}**.`)
+    }
+
+    if (user.roles.cache.array().includes(role)) {
+        return fail(message, `Você já possui a role **${role.name}**`)
     }
 
     await message.delete()
 
-    await message.member!.roles.add(role)
+    await user.roles.add(role)
 
-    const msg = await message.channel.send(`A role ${roleName} foi adicionada.`)
+    const msg = await message.channel.send(`A role **${role.name}** foi adicionada.`)
     msg.delete({ timeout: config.selfDestructMessageTimeoutMs })
 })
 
-export const removeRoleHandler: CommandHandler = checkRole(async (message, { role, roleName }) => {
-    if (!message.member!.roles.cache.array().includes(role)) {
-        return fail(message, `Você não possui a role ${roleName}`)
+export const removeRoleHandler: CommandHandler = checkRole(async (message, role, user) => {
+    if (!user.roles.cache.array().includes(role)) {
+        return fail(message, `Você não possui a role **${role.name}**`)
     }
 
-    await message.member!.roles.remove(role)
+    await user.roles.remove(role)
     await message.delete()
 
-    const msg = await message.channel.send(`A role ${roleName} foi removida.`)
+    const msg = await message.channel.send(`A role **${role.name}** foi removida.`)
     msg.delete({ timeout: config.selfDestructMessageTimeoutMs })
 })

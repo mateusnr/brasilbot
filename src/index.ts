@@ -1,51 +1,28 @@
-import * as Discord from "discord.js";
-import config from "./config";
-import { addRole, removeRole } from "./commands";
-import { monitorReddit } from "./workers";
-import * as winston from "winston";
+import * as Discord from 'discord.js'
+import config from './config'
+import { monitorReddit, monitorCovid } from './workers'
+import { registerAllCommands } from './commands'
+import { logger } from './logger'
 
-const client = new Discord.Client();
-const format = winston.format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`);
-const logger = winston.createLogger({
-    level: "debug",
-    format: winston.format.combine(
-        winston.format.timestamp(),
-        format
-    ),
-    transports: [
-        new winston.transports.Console(),
-        new winston.transports.File({ filename: "bot.log" })
-    ]
+const SECOND = 1000
+const MINUTE = SECOND * 60
+
+const client = new Discord.Client()
+
+client.on('ready', () => {
+    if (client.user) {
+        logger.info(`Logged in as ${client.user.tag}`)
+    } else {
+        logger.error('No user!')
+    }
 })
 
-client.on("ready", () => {
-    if (client.user) {
-        logger.info(`Logged in as ${client.user.tag}`);
-    } else {
-        logger.error(`No user!`);
-    }
-});
+registerAllCommands(client)
 
-client.on("message", async (message) => {
-    if (message.content.startsWith(`${config.prefix}add`)) {
-        logger.debug(`Added role to user ${message.author.id}`);
-        try {
-            await addRole(message);
-        } catch (err) {
-            logger.error(err);
-        } 
-    }
+client.login(config.discord.token)
 
-    if (message.content.startsWith(`${config.prefix}remove`)) {
-        logger.debug(`Removed role from user ${message.author.id}`);
-        try {
-            await removeRole(message);
-        } catch (err) {
-            logger.error(err);
-        }
-    }
-});
-
-client.setInterval(monitorReddit, 10000, client, logger);
-
-client.login(config.token);
+client.once('ready', () => {
+    client.setInterval(monitorReddit, 10 * SECOND, client, logger)
+    client.setInterval(monitorCovid, 120 * MINUTE, client, logger)
+    monitorCovid(client, logger)
+})

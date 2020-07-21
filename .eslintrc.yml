@@ -1,0 +1,25 @@
+parser: '@typescript-eslint/parser'
+env:
+  es6: true
+  node: true
+plugins:
+  - '@typescript-eslint'
+  - standard
+extends:
+  - eslint:recommended
+  - plugin:@typescript-eslint/eslint-recommended
+  - plugin:@typescript-eslint/recommended
+  - plugin:@typescript-eslint/recommended-requiring-type-checking
+  - standard
+parserOptions:
+  sourceType: module
+  tsconfigRootDir: '.'
+  project: ./tsconfig.json
+rules:
+  '@typescript-eslint/no-misused-promises': off
+  '@typescript-eslint/explicit-function-return-type': error
+  '@typescript-eslint/camelcase': [error, {properties: never}]
+  '@typescript-eslint/no-non-null-assertion': off
+  '@typescript-eslint/member-delimiter-style': [error, {multiline: {delimiter: none}}]
+  indent: [error, 4]
+  no-return-await: error

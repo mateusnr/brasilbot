@@ -22,7 +22,7 @@ registerAllCommands(client)
 client.login(config.discord.token)
 
 client.once('ready', () => {
-    client.setInterval(monitorReddit, 10 * SECOND, client, logger)
+    // client.setInterval(monitorReddit, 10 * SECOND, client, logger)
     client.setInterval(monitorCovid, 120 * MINUTE, client, logger)
     monitorCovid(client, logger)
 })
